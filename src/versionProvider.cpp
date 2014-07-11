@@ -33,10 +33,8 @@
 #include <stdlib.h>
 #include "versionProvider.hpp"
 void getVersion(char* buffer) {
-  //strcpy(buffer, __GIT_VERSION);
-  strcpy(buffer, (char*)"vUnknown");
+  strcpy(buffer, __GIT_VERSION);
 }
 void getTimestamp(char* buffer) {
-  //strcpy(buffer, __GIT_TIMESTAMP);
-  strcpy(buffer, (char*)"tUnknown");
+  strcpy(buffer, __GIT_TIMESTAMP);
 }
