@@ -81,7 +81,7 @@ void viewImage(char* filename) {
     }
 
     /* Prepare to decompress */
-    res = jd_prepare(&jdec, in_func, work, 8100, &devid);
+    res = jd_prepare(&jdec, in_func, work, 8190, &devid);
     if (res == JDR_OK) {
       /* Ready to dcompress. Image info is available here. */
       //printf("Image dimensions: %u by %u. %u bytes used.\n", jdec.width, jdec.height, 3100 - jdec.sz_pool);

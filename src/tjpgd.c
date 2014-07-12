@@ -113,11 +113,13 @@ BYTE BYTECLIP (
         INT val
 )
 {
-        if (val < 0) val = 0;
+        /*if (val < 0) val = 0;
         if (val > 255) val = 255;
 
-        return (BYTE)val;
-}
+        return (BYTE)val;*/
+        if (val&(~0xFF)) return (-val)>>31;
+        else           return val;
+    }
 
 #endif
 
