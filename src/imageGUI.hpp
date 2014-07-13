@@ -51,8 +51,10 @@ typedef struct {
   UINT xoff;    /* Image cursor */
   UINT yoff;    /* Image cursor */
 } IODEV;
-void viewImage(char* filename);
-UINT in_func (JDEC* jd, BYTE* buff, UINT nbyte);
-UINT out_func (JDEC* jd, void* bitmap, JRECT* rect);
+void restoreOCRAM2(void* buffer);
+void backupOCRAM2(void* buffer);
+void viewImage(char* filename, void* ocram2backup);
+UINT in_func (JDEC* jd, BYTE* buff, UINT nbyte) __attribute__ ((section (".ocram2")));
+UINT out_func (JDEC* jd, void* bitmap, JRECT* rect) __attribute__ ((section (".ocram2")));
 
 #endif

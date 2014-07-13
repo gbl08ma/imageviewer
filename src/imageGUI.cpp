@@ -47,7 +47,15 @@
 #include "graphicsProvider.hpp"
 #include "tjpgd.h"
 
-void viewImage(char* filename) {
+void backupOCRAM2(void* buffer) {
+  memcpy(buffer, (char*)0xE5017000, 8192);
+}
+
+void restoreOCRAM2(void* buffer) {
+  memcpy((char*)0xE5017000, buffer, 8192);
+}
+
+void viewImage(char* filename, void* ocram2backup) {
   void *work;     /* Pointer to the decompressor work area */
   JDEC jdec;    /* Decompression object */
   JRESULT res;    /* Result code of TJpgDec API */
@@ -56,13 +64,13 @@ void viewImage(char* filename) {
   /* Allocate a work area for TJpgDec */
   //work = alloca(3100*2);
   work = (char*)0xE5007000; // first "additional on-chip RAM area", 8192 bytes
-
   devid.xoff = 0;
   devid.yoff = 0;
   int scale = 0;
   unsigned short filenameshort[0x10A];
   Bfile_StrToName_ncpy(filenameshort, (unsigned char*)filename, 0x10A);
   while(1) {
+    restoreOCRAM2(ocram2backup); // see note on main.cpp
     //int init_time = RTC_GetTicks();
     int key;
     Bdisp_AllClr_VRAM();

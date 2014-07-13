@@ -52,7 +52,15 @@
 int main()
 {
   // Add-in entry point
-  
+  // second on-chip RAM area must be backed up,
+  // because we have code on it, but it is cleared
+  // on shutdown.
+  // crt0.S put the code in there, so we back it
+  // up now and restore right before we need it,
+  // to ensure it's there.
+  char ocram2backup[8192];
+  backupOCRAM2(ocram2backup);
+
   // disable Catalog function throughout the add-in, as we don't know how to make use of it:
   Bkey_SetAllFlags(0x80);
   
@@ -78,7 +86,7 @@ int main()
       //we were viewing an image when we left...
       MCSGetData1(0, MCSsize, filename); //recover filename, view that image
     }
-    viewImage(filename);
+    viewImage(filename, ocram2backup);
     MCSDelVar2(DIRNAME, STATEFILE); //if user reaches this point, then he didn't leave the add-in when viewing an image. delete statefile.
   }
 }

@@ -70,8 +70,8 @@ struct JDEC {
 
 
 /* TJpgDec API functions */
-JRESULT jd_prepare (JDEC*, UINT(*)(JDEC*,BYTE*,UINT), void*, UINT, void*);
-JRESULT jd_decomp (JDEC*, UINT(*)(JDEC*,void*,JRECT*), BYTE);
+JRESULT jd_prepare (JDEC*, UINT(*)(JDEC*,BYTE*,UINT), void*, UINT, void*) __attribute__ ((section (".ocram2")));
+JRESULT jd_decomp (JDEC*, UINT(*)(JDEC*,void*,JRECT*), BYTE) __attribute__ ((section (".ocram2")));
 
 
 #ifdef __cplusplus
