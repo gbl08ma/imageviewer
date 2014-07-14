@@ -161,6 +161,12 @@ UINT create_qt_tbl (    /* 0:OK, !0:Failed */
         JDEC* jd,                       /* Pointer to the decompressor object */
         const BYTE* data,       /* Pointer to the quantizer tables */
         UINT ndata                      /* Size of input data */
+) __attribute__ ((section (".ocram2")));
+static
+UINT create_qt_tbl (    /* 0:OK, !0:Failed */
+        JDEC* jd,                       /* Pointer to the decompressor object */
+        const BYTE* data,       /* Pointer to the quantizer tables */
+        UINT ndata                      /* Size of input data */
 )
 {
         UINT i;
@@ -193,6 +199,12 @@ UINT create_qt_tbl (    /* 0:OK, !0:Failed */
 /* Create huffman code tables with a DHT segment                         */
 /*-----------------------------------------------------------------------*/
 
+static
+UINT create_huffman_tbl (       /* 0:OK, !0:Failed */
+        JDEC* jd,                               /* Pointer to the decompressor object */
+        const BYTE* data,               /* Pointer to the packed huffman tables */
+        UINT ndata                              /* Size of input data */
+) __attribute__ ((section (".ocram2")));
 static
 UINT create_huffman_tbl (       /* 0:OK, !0:Failed */
         JDEC* jd,                               /* Pointer to the decompressor object */
@@ -255,7 +267,12 @@ static
 INT bitext (    /* >=0: extracted data, <0: error code */
         JDEC* jd,       /* Pointer to the decompressor object */
         UINT nbit       /* Number of bits to extract (1 to 11) */
-)
+) __attribute__ ((section (".ocram2")));
+static
+INT bitext (    /* >=0: extracted data, <0: error code */
+        JDEC* jd,       /* Pointer to the decompressor object */
+        UINT nbit       /* Number of bits to extract (1 to 11) */
+) 
 {
         BYTE msk, s, *dp;
         UINT dc, v, f;
@@ -368,6 +385,11 @@ static
 void block_idct (
         LONG* src,      /* Input block data (de-quantized and pre-scaled for Arai Algorithm) */
         BYTE* dst       /* Pointer to the destination to store the block as byte array */
+) __attribute__ ((section (".ocram2")));
+static
+void block_idct (
+        LONG* src,      /* Input block data (de-quantized and pre-scaled for Arai Algorithm) */
+        BYTE* dst       /* Pointer to the destination to store the block as byte array */
 )
 {
         const LONG M13 = (LONG)(1.41421*4096), M2 = (LONG)(1.08239*4096), M4 = (LONG)(2.61313*4096), M5 = (LONG)(1.84776*4096);
@@ -476,7 +498,10 @@ void block_idct (
 /*-----------------------------------------------------------------------*/
 /* Load all blocks in the MCU into working buffer                        */
 /*-----------------------------------------------------------------------*/
-
+static
+JRESULT mcu_load (
+        JDEC* jd                /* Pointer to the decompressor object */
+) __attribute__ ((section (".ocram2")));
 static
 JRESULT mcu_load (
         JDEC* jd                /* Pointer to the decompressor object */
@@ -560,6 +585,13 @@ JRESULT mcu_load (
 /* Output an MCU: Convert YCrCb to RGB and output it in RGB form         */
 /*-----------------------------------------------------------------------*/
 
+static
+JRESULT mcu_output (
+        JDEC* jd,       /* Pointer to the decompressor object */
+        UINT (*outfunc)(JDEC*, void*, JRECT*),  /* RGB output function */
+        UINT x,         /* MCU position in the image (left of the MCU) */
+        UINT y          /* MCU position in the image (top of the MCU) */
+) __attribute__ ((section (".ocram2")));
 static
 JRESULT mcu_output (
         JDEC* jd,       /* Pointer to the decompressor object */
