@@ -72,7 +72,7 @@ int main()
   while(1) {
     int MCSsize;
     MCSGetDlen2(DIRNAME, STATEFILE, &MCSsize);
-    char filename[MAX_FILENAME_SIZE+1];
+    char filename[MAX_FILENAME_SIZE+1] = "";
     if (MCSsize == 0) {
       if(fileBrowser(filename, (unsigned char*)"*.jpg", (char*)"Images")) {
         int createResult = MCS_CreateDirectory( DIRNAME );
