@@ -36,8 +36,8 @@ GIT_TIMESTAMP += "$(shell git log --pretty=format:'%aD' -1)"
 
 MKG3AFLAGS := -s -n basic:Images -n pt:Imagens -n internal:IMAGES -i uns:../unselected.bmp -i sel:../selected.bmp -i mon:../monoicon.bin
 
-CFLAGS	= -std=c99 -Os -fno-exceptions -Wall  -flto $(MACHDEP) $(INCLUDE) -D__GIT_VERSION=\"$(GIT_VERSION)\" -D__GIT_TIMESTAMP=\"$(GIT_TIMESTAMP)\"
-CXXFLAGS	=	 -std=c++11 -Os -fno-exceptions -Wall  -flto $(MACHDEP) $(INCLUDE) -D__GIT_VERSION=\"$(GIT_VERSION)\" -D__GIT_TIMESTAMP=\"$(GIT_TIMESTAMP)\"
+CFLAGS	= -std=c99 -Os -fno-exceptions -Wall -Winline -flto $(MACHDEP) $(INCLUDE) -D__GIT_VERSION=\"$(GIT_VERSION)\" -D__GIT_TIMESTAMP=\"$(GIT_TIMESTAMP)\"
+CXXFLAGS	=	 -std=c++11 -Os -fno-exceptions -Wall -Winline -flto $(MACHDEP) $(INCLUDE) -D__GIT_VERSION=\"$(GIT_VERSION)\" -D__GIT_TIMESTAMP=\"$(GIT_TIMESTAMP)\"
 
 LDFLAGS	= $(MACHDEP) -T$(FXCGSDK)/common/prizm.ld -Ofast -flto -Wl,-static -Wl,-gc-sections -Wl,-Map,foo.map
 
