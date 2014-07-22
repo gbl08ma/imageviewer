@@ -62,7 +62,6 @@ void viewImage(char* filename, void* ocram2backup) {
   IODEV devid;    /* User defined device identifier */
 
   /* Allocate a work area for TJpgDec */
-  //work = alloca(3100*2);
   work = (char*)0xE5007000; // first "additional on-chip RAM area", 8192 bytes
   devid.xoff = 0;
   devid.yoff = 0;
@@ -92,7 +91,6 @@ void viewImage(char* filename, void* ocram2backup) {
     res = jd_prepare(&jdec, in_func, work, 8190, &devid);
     if (res == JDR_OK) {
       /* Ready to dcompress. Image info is available here. */
-      //printf("Image dimensions: %u by %u. %u bytes used.\n", jdec.width, jdec.height, 3100 - jdec.sz_pool);
       if(jdec.width < LCD_WIDTH_PX) {
         devid.xoff = -(LCD_WIDTH_PX/2 - jdec.width/2);
       }
@@ -104,7 +102,6 @@ void viewImage(char* filename, void* ocram2backup) {
         /* Decompression succeeded or was stopped by output function which determined enough had been decoded.
          * You have the decompressed image in the frame buffer here. */
       } else {
-        //printf("Failed to decompress: rc=%d\n", res);
         Bfile_CloseFile_OS(devid.fp);
         MsgBoxPush(4);
         mPrintXY(3, 2, (char*)"An error occurred", TEXT_MODE_TRANSPARENT_BACKGROUND, TEXT_COLOR_BLACK);
@@ -118,7 +115,6 @@ void viewImage(char* filename, void* ocram2backup) {
       }
 
     } else {
-      //printf("Failed to prepare: rc=%d\n", res);
       Bfile_CloseFile_OS(devid.fp);
       MsgBoxPush(4);
       mPrintXY(3, 2, (char*)"An error occurred", TEXT_MODE_TRANSPARENT_BACKGROUND, TEXT_COLOR_BLACK);
@@ -236,10 +232,6 @@ UINT in_func (JDEC* jd, BYTE* buff, UINT nbyte)
 UINT out_func (JDEC* jd, void* bitmap, JRECT* rect)
 {
   IODEV *dev = (IODEV*)jd->device;
-  /* Put progress indicator */
-  /*if (rect->left == 0) {
-    printf("\r%lu%%", (rect->top << jd->scale) * 100UL / jd->height);
-  }*/
   TDispGraph Graph;
   Graph.x = rect->left - dev->xoff;
   Graph.y = rect->top - dev->yoff;
