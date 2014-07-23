@@ -58,7 +58,6 @@ void restoreOCRAM2(void* buffer) {
 void viewImage(char* filename, void* ocram2backup) {
   void *work;     /* Pointer to the decompressor work area */
   JDEC jdec;    /* Decompression object */
-  JRESULT res;    /* Result code of TJpgDec API */
   IODEV devid;    /* User defined device identifier */
 
   /* Allocate a work area for TJpgDec */
@@ -88,7 +87,7 @@ void viewImage(char* filename, void* ocram2backup) {
     }
 
     /* Prepare to decompress */
-    res = jd_prepare(&jdec, in_func, work, 8190, &devid);
+    JRESULT res = jd_prepare(&jdec, in_func, work, 8190, &devid);
     if (res == JDR_OK) {
       /* Ready to dcompress. Image info is available here. */
       if(jdec.width < LCD_WIDTH_PX) {
