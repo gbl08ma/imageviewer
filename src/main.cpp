@@ -67,7 +67,6 @@ int main()
   Bdisp_EnableColor(1);
   EnableStatusArea(0);
   DefineStatusAreaFlags(3, SAF_BATTERY | SAF_TEXT | SAF_GLYPH | SAF_ALPHA_SHIFT, 0, 0);
-  Bdisp_AllClr_VRAM();
   
   while(1) {
     int MCSsize;
