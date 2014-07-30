@@ -74,9 +74,8 @@ int main()
     char filename[MAX_FILENAME_SIZE+1] = "";
     if (MCSsize == 0) {
       if(fileBrowser(filename, (unsigned char*)"*.jpg", (char*)"Images")) {
-        int createResult = MCS_CreateDirectory( DIRNAME );
-        if(createResult != 0) // Check directory existence
-        { // directory already exists, so delete the exiting file that may be there
+        if(MCS_CreateDirectory(DIRNAME) != 0) { // Create directory / check its existence
+          // directory already exists, so delete the exiting file that may be there
           MCSDelVar2(DIRNAME, STATEFILE);
         }
         MCSPutVar2(DIRNAME, STATEFILE, strlen(filename), (unsigned char*)filename); //so that if user leaves when viewing an image, we have that saved.
