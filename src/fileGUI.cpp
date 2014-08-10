@@ -115,7 +115,7 @@ int fileBrowserSub(char* browserbasepath, char* filename, unsigned char* filter,
   menu.height=7;
   while(inscreen) {
     Bdisp_AllClr_VRAM();
-    drawFkeyLabels(0x03B1, -1, -1, -1, -1, 0x03DF); // OPEN, VERSION
+    drawFkeyLabels((menu.numitems ? 0x03B1 : 0), -1, -1, -1, -1, 0x03DF); // OPEN, VERSION
     itoa(smemfree, (unsigned char*)titleBuffer);
     LocalizeMessage1( 340, titleBufferBuf ); //"bytes free"
     strncat((char*)titleBuffer, (char*)titleBufferBuf, 65);
@@ -141,6 +141,7 @@ int fileBrowserSub(char* browserbasepath, char* filename, unsigned char* filter,
         break;
       case KEY_CTRL_F1:
       case MENU_RETURN_SELECTION:
+        if(!menu.numitems) break;
         if(menuitems[menu.selection-1].isfolder) {
           strcpy(browserbasepath, files[menu.selection-1].filename); //switch to selected folder
           strcat(browserbasepath, "\\");
