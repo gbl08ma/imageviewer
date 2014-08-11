@@ -61,7 +61,6 @@ int fileBrowser(char* filename, unsigned char* filter, char* title) {
 }
 
 int fileBrowserSub(char* browserbasepath, char* filename, unsigned char* filter, char* title) {
-  int inscreen = 1;
   Menu menu;
   MenuItemIcon icontable[12];
   buildIconTable(icontable);
@@ -113,7 +112,7 @@ int fileBrowserSub(char* browserbasepath, char* filename, unsigned char* filter,
   menu.nodatamsg = (char*)"No Data";
   menu.title = title;
   menu.height=7;
-  while(inscreen) {
+  while(1) {
     Bdisp_AllClr_VRAM();
     drawFkeyLabels((menu.numitems ? 0x03B1 : 0), -1, -1, -1, -1, 0x03DF); // OPEN, VERSION
     itoa(smemfree, (unsigned char*)titleBuffer);
