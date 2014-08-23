@@ -103,12 +103,18 @@ void viewJPEGimage(char* filename, void* ocram2backup) {
     /* Prepare to decompress */
     JRESULT res = jd_prepare(&jdec, jpeg_in_func, work, 8190, &devid);
     if (res == JDR_OK) {
-      /* Ready to dcompress. Image info is available here. */
+      /* Ready to decompress. Image info is available here. */
       if(jdec.width < LCD_WIDTH_PX) {
         devid.xoff = -(LCD_WIDTH_PX/2 - jdec.width/2);
+      } else {
+        if(devid.xoff<0) devid.xoff = 0;
+        if(devid.xoff>(int)jdec.width-LCD_WIDTH_PX) devid.xoff=jdec.width-LCD_WIDTH_PX;
       }
       if(jdec.height < LCD_HEIGHT_PX) {
         devid.yoff = -(LCD_HEIGHT_PX/2 - jdec.height/2);
+      } else {
+        if(devid.yoff<0) devid.yoff = 0;
+        if(devid.yoff>(int)jdec.height-LCD_HEIGHT_PX) devid.yoff=jdec.height-LCD_HEIGHT_PX;
       }
       res = jd_decomp(&jdec, jpeg_out_func, scale);   /* Start to decompress with set scaling */
       if (res == JDR_OK || res == JDR_INTR) {

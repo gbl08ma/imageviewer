@@ -49,8 +49,8 @@
 
 typedef struct {
   int fp;        /* File pointer for input function */
-  UINT xoff;    /* Image cursor */
-  UINT yoff;    /* Image cursor */
+  INT xoff;    /* Image cursor */
+  INT yoff;    /* Image cursor */
 } IODEV;
 void restoreOCRAM2(void* buffer);
 void backupOCRAM2(void* buffer);
