@@ -35,7 +35,8 @@ GIT_TIMESTAMP += "$(shell git log --pretty=format:'%aD' -1)"
 #---------------------------------------------------------------------------------
 
 MKG3AFLAGS := -s -n basic:Images -n pt:Imagens -n internal:IMAGES -i uns:../unselected.bmp -i sel:../selected.bmp -i mon:../monoicon.bin
-
+INCLUDE += -I$(CURDIR)/../../libpng-1.6.12/ -I$(CURDIR)/../../zlib-1.2.8/
+LIBPATHS += -L$(CURDIR)/../../libpng-1.6.12/.libs -L$(CURDIR)/../../zlib-1.2.8/
 CFLAGS	= -std=c99 -Os -fno-exceptions -Wall -Winline -flto $(MACHDEP) $(INCLUDE) -D__GIT_VERSION=\"$(GIT_VERSION)\" -D__GIT_TIMESTAMP=\"$(GIT_TIMESTAMP)\"
 CXXFLAGS	=	 -std=c++11 -Os -fno-exceptions -Wall -Winline -flto $(MACHDEP) $(INCLUDE) -D__GIT_VERSION=\"$(GIT_VERSION)\" -D__GIT_TIMESTAMP=\"$(GIT_TIMESTAMP)\"
 
@@ -44,7 +45,7 @@ LDFLAGS	= $(MACHDEP) -T$(FXCGSDK)/common/prizm.ld -Ofast -flto -Wl,-static -Wl,-
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project   -lz -lpng
 #---------------------------------------------------------------------------------
-LIBS	:=	 -lfxcg -lc -lgcc
+LIBS	:=	 -lpng16 -lz -lfxcg -lm -lc -lgcc -lminiz
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
