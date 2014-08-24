@@ -48,32 +48,32 @@
 #include "graphicsProvider.hpp"
 #include "aboutGUI.hpp"
 
-int fileBrowser(char* filename, unsigned char* filter, char* title) {
+int fileBrowser(char* filename, unsigned char* filter, unsigned char* filter2, char* title) {
   // returns 1 when user selects a file, 0 when aborts (exit)
   int res = 1;
   char browserbasepath[MAX_FILENAME_SIZE+1] = "\\\\fls0\\";  
   while(res) {
     strcpy(filename, (char*)"");
-    res = fileBrowserSub(browserbasepath, filename, filter, title);
+    res = fileBrowserSub(browserbasepath, filename, filter, filter2, title);
     if(res==2) return 1; // user selected a file
   }
   return 0;
 }
 
-int fileBrowserSub(char* browserbasepath, char* filename, unsigned char* filter, char* title) {
+int fileBrowserSub(char* browserbasepath, char* filename, unsigned char* filter, unsigned char* filter2, char* title) {
   Menu menu;
   MenuItemIcon icontable[12];
   buildIconTable(icontable);
   
   // first get file count so we know how much to alloc
-  GetFiles(NULL, NULL, browserbasepath, &menu.numitems, filter);
+  GetFiles(NULL, NULL, browserbasepath, &menu.numitems, filter, filter2);
   MenuItem* menuitems = NULL;
   File* files = NULL;
   if(menu.numitems > 0) {
     menuitems = (MenuItem*)alloca(menu.numitems*sizeof(MenuItem));
     files = (File*)alloca(menu.numitems*sizeof(File));
     // populate arrays
-    GetFiles(files, menuitems, browserbasepath, &menu.numitems, filter);
+    GetFiles(files, menuitems, browserbasepath, &menu.numitems, filter, filter2);
     menu.items = menuitems;
   }
   

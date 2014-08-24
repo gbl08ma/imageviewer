@@ -53,8 +53,10 @@ typedef struct {
 } IODEV;
 void restoreOCRAM2(void* buffer);
 void backupOCRAM2(void* buffer);
-void viewImage(char* filename, void* ocram2backup);
-UINT in_func (JDEC* jd, BYTE* buff, UINT nbyte) __attribute__ ((section (".ocram2")));
-UINT out_func (JDEC* jd, void* bitmap, JRECT* rect) __attribute__ ((section (".ocram2")));
+void viewJPEGimage(char* filename, void* ocram2backup);
+UINT jpeg_in_func (JDEC* jd, BYTE* buff, UINT nbyte) __attribute__ ((section (".ocram2")));
+UINT jpeg_out_func (JDEC* jd, void* bitmap, JRECT* rect) __attribute__ ((section (".ocram2")));
+
+void viewPNGimage(char* filename);
 
 #endif

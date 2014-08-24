@@ -45,6 +45,7 @@
 #include "imageGUI.hpp"
 #include "fileProvider.hpp"
 #include "fileGUI.hpp"
+#include "stringsProvider.hpp"
 
 #define DIRNAME (unsigned char*)"@IMAGES"
 #define STATEFILE (unsigned char*)"LastImg"
@@ -73,7 +74,7 @@ int main()
     MCSGetDlen2(DIRNAME, STATEFILE, &MCSsize);
     char filename[MAX_FILENAME_SIZE+1] = "";
     if (MCSsize == 0) {
-      if(fileBrowser(filename, (unsigned char*)"*.jpg", (char*)"Images")) {
+      if(fileBrowser(filename, (unsigned char*)"*.jpg", (unsigned char*)"*.png", (char*)"Images")) {
         if(MCS_CreateDirectory(DIRNAME) != 0) { // Create directory / check its existence
           // directory already exists, so delete the exiting file that may be there
           MCSDelVar2(DIRNAME, STATEFILE);
@@ -84,7 +85,11 @@ int main()
       //we were viewing an image when we left...
       MCSGetData1(0, MCSsize, filename); //recover filename, view that image
     }
-    viewImage(filename, ocram2backup);
+    if(EndsIWith(filename, ".jpg")) {
+      viewJPEGimage(filename, ocram2backup);
+    } else {
+      viewPNGimage(filename);
+    }
     MCSDelVar2(DIRNAME, STATEFILE); //if user reaches this point, then he didn't leave the add-in when viewing an image. delete statefile.
   }
 }
