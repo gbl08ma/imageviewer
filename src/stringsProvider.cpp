@@ -1,5 +1,6 @@
 /*----------------------------------------------------------------------------/
-/ JPEG Image Viewer for the Casio Prizm - Copyright 2014 tny. internet media
+/ JPEG and PNG Image Viewer for the Casio Prizm
+/ Copyright 2014 tny. internet media
 / http://i.tny.im  /  admin@tny.im
 /-----------------------------------------------------------------------------/
 / Copyright (c) 2014, Gabriel Maia and the tny. internet media group
