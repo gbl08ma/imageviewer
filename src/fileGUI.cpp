@@ -125,7 +125,7 @@ int fileBrowserSub(char* browserbasepath, char* filename, unsigned char* filter,
       case MENU_RETURN_EXIT:
         if(!strcmp(browserbasepath,"\\\\fls0\\")) { //check that we aren't already in the root folder
           //we are, return 0 so we exit
-          return 0;
+          //return 0; // in this add-in, the file browser shouldn't return
         } else {
           int i=strlen(browserbasepath)-2;
           while (i>=0 && browserbasepath[i] != '\\')
