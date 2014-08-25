@@ -72,6 +72,17 @@ void errorMessage(char* l1, char* l2, char* l3) {
   MsgBoxPop();
 }
 
+int ipow(int base, int exp)
+{
+  int result = 1;
+  while (exp) {
+    if (exp & 1) result *= base;
+    exp >>= 1;
+    base *= base;
+  }
+  return result;
+}
+
 /**************************************************
  * JPEG viewing code
 **************************************************/
@@ -104,17 +115,18 @@ void viewJPEGimage(char* filename, void* ocram2backup) {
     JRESULT res = jd_prepare(&jdec, jpeg_in_func, work, 8190, &devid);
     if (res == JDR_OK) {
       /* Ready to decompress. Image info is available here. */
-      if(jdec.width < LCD_WIDTH_PX) {
-        devid.xoff = -(LCD_WIDTH_PX/2 - jdec.width/2);
+      int sdiv = ipow(2, scale);
+      if(jdec.width/sdiv < LCD_WIDTH_PX) {
+        devid.xoff = -(LCD_WIDTH_PX/2 - (jdec.width/sdiv)/2);
       } else {
         if(devid.xoff<0) devid.xoff = 0;
-        if(devid.xoff>(int)jdec.width-LCD_WIDTH_PX) devid.xoff=jdec.width-LCD_WIDTH_PX;
+        if(devid.xoff>(int)jdec.width/sdiv-LCD_WIDTH_PX) devid.xoff=jdec.width/sdiv-LCD_WIDTH_PX;
       }
-      if(jdec.height < LCD_HEIGHT_PX) {
-        devid.yoff = -(LCD_HEIGHT_PX/2 - jdec.height/2);
+      if(jdec.height/sdiv < LCD_HEIGHT_PX) {
+        devid.yoff = -(LCD_HEIGHT_PX/2 - (jdec.height/sdiv)/2);
       } else {
         if(devid.yoff<0) devid.yoff = 0;
-        if(devid.yoff>(int)jdec.height-LCD_HEIGHT_PX) devid.yoff=jdec.height-LCD_HEIGHT_PX;
+        if(devid.yoff>(int)jdec.height/sdiv-LCD_HEIGHT_PX) devid.yoff=jdec.height/sdiv-LCD_HEIGHT_PX;
       }
       res = jd_decomp(&jdec, jpeg_out_func, scale);   /* Start to decompress with set scaling */
       if (res == JDR_OK || res == JDR_INTR) {
