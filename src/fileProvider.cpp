@@ -158,11 +158,11 @@ int fileIconFromName(char* name) {
     return FILE_ICON_G3E;
   else if (EndsIWith(name, (char*)".g3a") || EndsIWith(name, (char*)".g3l"))
     return FILE_ICON_G3A;
-  else if (EndsIWith(name, (char*)".g3p"))
+  else if (EndsIWith(name, (char*)".g3p") || EndsIWith(name, (char*)".png"))
     return FILE_ICON_G3P;
   else if (EndsIWith(name, (char*)".g3b"))
     return FILE_ICON_G3B;
-  else if (EndsIWith(name, (char*)".bmp"))
+  else if (EndsIWith(name, (char*)".bmp") || EndsIWith(name, (char*)".jpg"))
     return FILE_ICON_BMP;
   else if (EndsIWith(name, (char*)".txt"))
     return FILE_ICON_TXT;
