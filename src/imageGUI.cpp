@@ -101,7 +101,6 @@ void viewJPEGimage(char* filename, void* ocram2backup) {
   Bfile_StrToName_ncpy(filenameshort, (unsigned char*)filename, 0x10A);
   while(1) {
     restoreOCRAM2(ocram2backup); // see note on main.cpp
-    //int init_time = RTC_GetTicks();
     int key;
     Bdisp_AllClr_VRAM();
     /* Open a JPEG file */
@@ -145,10 +144,6 @@ void viewJPEGimage(char* filename, void* ocram2backup) {
     }
 
     Bfile_CloseFile_OS(devid.fp);     /* Close the JPEG file */
-    /*int finish_time = RTC_GetTicks();
-    char buffer[20] = "";
-    itoa(finish_time-init_time, (unsigned char*)buffer);
-    mPrintXY(1,1,buffer,TEXT_MODE_NORMAL,TEXT_COLOR_BLACK);*/
     int inkeyloop = 1;
     EnableStatusArea(3);
     while(inkeyloop) {
