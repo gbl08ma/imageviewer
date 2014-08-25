@@ -542,7 +542,7 @@ void viewPNGimage(char* filename) {
           }
           break;
         case KEY_CHAR_MINUS:
-          if(!mode) {
+          if(!mode && width>LCD_WIDTH_PX && height>LCD_HEIGHT_PX) {
             mode = 1;
             inkeyloop = 0;
           }
