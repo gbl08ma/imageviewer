@@ -266,7 +266,7 @@ extern "C" {
 void abort(void) __attribute__ ((used));
 void abort(void) {
   int x=0,y=160;
-  PrintMini(&x,&y, (unsigned char*)"Abort called",0,0xFFFFFFFF,0,0,0xFFFF,0,1,0);
+  PrintMini(&x,&y, (unsigned char*)"An error occurred, MENU to exit.",0,0xFFFFFFFF,0,0,0xFFFF,0,1,0);
   int key;
   while(1)
     GetKey(&key);
@@ -275,162 +275,285 @@ void abort(void) {
 
 #define VRAM_ADDRESS 0xA8000000
 void viewPNGimage(char* filename) {
-  memset((unsigned short*)VRAM_ADDRESS,0,384*216*2);                    
-  //load png file
-  FILE *fp = fopen(filename, "rb");
-  if (!fp){
-    errorMessage((char*)"An error occurred", (char*)"(failed to open", (char*)"file)");
-    return;
-  }
-  unsigned char header[8];
-  if(fread(header, 1, 8, fp)!=8){
-    fclose(fp);
-    errorMessage((char*)"An error occurred", (char*)"(failed to read", (char*)"file)");
-    return;
-  }
-  if (png_sig_cmp(header, 0, 8)){
-    fclose(fp);
-    errorMessage((char*)"An error occurred", (char*)"(not a valid PNG", (char*)"file)");
-    return;
-  }
-  png_structp png_ptr=png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
-  if (!png_ptr){
-    errorMessage((char*)"An error occurred", (char*)"(failed to create", (char*)"PNG read struct)");
-    return;
-  }
-  png_infop info_ptr = png_create_info_struct(png_ptr);
-  if (!info_ptr){
-    png_destroy_read_struct(&png_ptr,(png_infopp)NULL, (png_infopp)NULL);
-    errorMessage((char*)"An error occurred", (char*)"(failed to create", (char*)"PNG info struct)");
-    return;
-  }
-  
-  png_init_io(png_ptr, fp);
-  png_set_sig_bytes(png_ptr, 8);
-  png_read_info(png_ptr, info_ptr);
-  //get information about the image
-  unsigned int width,height;
-  int color_type, bit_depth;
-  png_get_IHDR(png_ptr, info_ptr,&width,&height,&bit_depth,&color_type,0,0,0);
-  if (color_type == PNG_COLOR_TYPE_PALETTE)
-    png_set_palette_to_rgb(png_ptr);
-  if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-    png_set_gray_to_rgb(png_ptr);
-  if (bit_depth == 16){
-    #if PNG_LIBPNG_VER >= 10504
-         png_set_scale_16(png_ptr);
-    #else
-         png_set_strip_16(png_ptr);
-    #endif
-  }
-  png_color_16 background_color;
-  png_set_background_fixed(png_ptr,&background_color,PNG_BACKGROUND_GAMMA_SCREEN, 0, PNG_FP_1);
-  png_read_update_info(png_ptr, info_ptr);
-  //Read the image two rows at a time for bilinear scaling
-  
-  unsigned short * vram=(unsigned short*)VRAM_ADDRESS;
-  unsigned h;
-  if((width==384)&&(height<=216)){
-    png_bytep row_pointers[216];
-    //Simply center image and copy data
-    vram+=((216-height)/2)*384;
-    unsigned char*imgTmp = (unsigned char*)alloca(width*height*3);
-    unsigned char*d=imgTmp;
-    for(h=0;h<height;++h){
-      row_pointers[h]=d;
-      d+=384*3;
-    }
-    png_read_image(png_ptr, row_pointers);
-    d=imgTmp;
-    for(h=0;h<width*height;++h){
-      *vram++=((d[0] & 0xF8) << 8) | ((d[1] & 0xFC) << 3) | (d[2] >> 3);
-      d+=3;
-    }
-  } else {
-    unsigned int w2,h2,centerx,centery;
-    int xpick=(int)((384<<16)/width)+1,ypick=(int)((216<<16)/height)+1;
-    if(xpick==ypick){
-      w2=384;
-      h2=216;
-      centerx=centery=0;
-    }else if(xpick<ypick){
-      w2=384;
-      h2=height*384/width;
-      centerx=0;
-      centery=(216-h2)/2;
-    }else{
-      w2=width*216/height;
-      h2=216;
-      centerx=(384-w2)/2;
-      centery=0;
-    }
-    // EDIT: added +1 to account for an early rounding problem
-    unsigned x_ratio = ((width<<12)/w2)+1;
-    unsigned y_ratio = ((height<<12)/h2)+1;
-    unsigned char* decodeBuf = (unsigned char*)alloca(width*3*2);//Enough memory to hold two rows of data
-    vram+=(centery*384)+centerx;
-    unsigned i,j,yo=0;
-    png_bytep row_pointers[2];
-    row_pointers[0]=decodeBuf;
-    row_pointers[1]=decodeBuf+(width*3);
-    png_read_rows(png_ptr, row_pointers, NULL,2);
-    unsigned left=height-2;
-    for (i=0;i<h2;i++){
-      //Deterimin how many lines to read
-      unsigned read=((y_ratio * i)>>12)-yo;
-      if(read){
-        while(read>=3){
-          png_read_row(png_ptr,decodeBuf,NULL);//Apperntly this is the right way to skip a row http://osdir.com/ml/graphics.png.devel/2008-05/msg00038.html
-          --read;
-          --left;
-        }
-        if(read==1){
-          memcpy(decodeBuf,decodeBuf+(width*3),width*3);
-          png_read_row(png_ptr,decodeBuf+(width*3),NULL);
-          --left;
-        }else{
-          png_read_rows(png_ptr, row_pointers, NULL,2);
-          left-=2;
-        }
-      }
-      for (j=0;j<w2;j++){
-        unsigned A[3],B[3],C[3],D[3];
-        unsigned x = x_ratio * j;
-        unsigned y = y_ratio * i;
-        unsigned x_diff = x&4095;
-        unsigned y_diff = y&4095;
-        unsigned ix_diff=4095-x_diff;
-        unsigned iy_diff=4095-y_diff;
-        x>>=12;
-        y>>=12;
-        yo=y;
-        unsigned rgb;
-        for(rgb=0;rgb<3;++rgb){
-          A[rgb] = (decodeBuf[x*3+rgb]*ix_diff*iy_diff)>>24;
-          B[rgb] = (decodeBuf[(x+1)*3+rgb]*(x_diff)*iy_diff)>>24;
-          C[rgb] = (decodeBuf[(x+width)*3+rgb]*(y_diff)*ix_diff)>>24;
-          D[rgb] = (decodeBuf[(x+width+1)*3+rgb]*(x_diff*y_diff))>>24;
-        }
-        // Y = A(1-w)(1-h) + B(w)(1-h) + C(h)(1-w) + Dwh
-      
-        *vram++=(((A[0]+B[0]+C[0]+D[0]) & 0xF8) << 8) | (((A[1]+B[1]+C[1]+D[1]) & 0xFC) << 3) | ((A[2]+B[2]+C[2]+D[2]) >> 3);
-        //*out++=A+B+C+D;
-      }
-      vram+=384-w2;
-    }
-    while(left--){
-      png_read_row(png_ptr,decodeBuf,NULL);//Avoid a too much data warning
-    }
-  }
-  //cleanup
-  png_read_end(png_ptr,(png_infop)NULL);
-  png_destroy_read_struct(&png_ptr, &info_ptr,(png_infopp)NULL);
-  fclose(fp);
-  EnableStatusArea(3);
+  int startx = 0;
+  int starty = 0;
+  int mode = 0;
   while(1) {
-    int key;
-    GetKey(&key);
-    if(key==KEY_CTRL_EXIT) break;
+    //memset((unsigned short*)VRAM_ADDRESS,0,384*216*2);                    
+    Bdisp_AllClr_VRAM();
+    //load png file
+    FILE *fp = fopen(filename, "rb");
+    if (!fp){
+      errorMessage((char*)"An error occurred", (char*)"(failed to open", (char*)"file)");
+      return;
+    }
+    unsigned char header[8];
+    if(fread(header, 1, 8, fp)!=8){
+      fclose(fp);
+      errorMessage((char*)"An error occurred", (char*)"(failed to read", (char*)"file)");
+      return;
+    }
+    if (png_sig_cmp(header, 0, 8)){
+      fclose(fp);
+      errorMessage((char*)"An error occurred", (char*)"(not a valid PNG", (char*)"file)");
+      return;
+    }
+    png_structp png_ptr=png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
+    if (!png_ptr){
+      errorMessage((char*)"An error occurred", (char*)"(failed to create", (char*)"PNG read struct)");
+      return;
+    }
+    png_infop info_ptr = png_create_info_struct(png_ptr);
+    if (!info_ptr){
+      png_destroy_read_struct(&png_ptr,(png_infopp)NULL, (png_infopp)NULL);
+      errorMessage((char*)"An error occurred", (char*)"(failed to create", (char*)"PNG info struct)");
+      return;
+    }
+    
+    png_init_io(png_ptr, fp);
+    png_set_sig_bytes(png_ptr, 8);
+    png_read_info(png_ptr, info_ptr);
+    //get information about the image
+    unsigned int width,height;
+    int color_type, bit_depth;
+    png_get_IHDR(png_ptr, info_ptr,&width,&height,&bit_depth,&color_type,0,0,0);
+    if (color_type == PNG_COLOR_TYPE_PALETTE)
+      png_set_palette_to_rgb(png_ptr);
+    if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+      png_set_gray_to_rgb(png_ptr);
+    if (bit_depth == 16){
+      #if PNG_LIBPNG_VER >= 10504
+           png_set_scale_16(png_ptr);
+      #else
+           png_set_strip_16(png_ptr);
+      #endif
+    }
+    png_color_16 background_color;
+    png_set_background_fixed(png_ptr,&background_color,PNG_BACKGROUND_GAMMA_SCREEN, 0, PNG_FP_1);
+    png_read_update_info(png_ptr, info_ptr);
+    
+    unsigned short * vram=(unsigned short*)VRAM_ADDRESS;
+
+    if(mode) {
+      unsigned h;
+      if((width==384)&&(height<=216)){
+        png_bytep row_pointers[216];
+        //Simply center image and copy data
+        vram+=((216-height)/2)*384;
+        unsigned char imgTmp[width*height*3];
+        unsigned char*d=imgTmp;
+        for(h=0;h<height;++h){
+          row_pointers[h]=d;
+          d+=384*3;
+        }
+        png_read_image(png_ptr, row_pointers);
+        d=imgTmp;
+        for(h=0;h<width*height;++h){
+          *vram++=((d[0] & 0xF8) << 8) | ((d[1] & 0xFC) << 3) | (d[2] >> 3);
+          d+=3;
+        }
+      } else {
+        unsigned int w2,h2,centerx,centery;
+        int xpick=(int)((384<<16)/width)+1,ypick=(int)((216<<16)/height)+1;
+        if(xpick==ypick){
+          w2=384;
+          h2=216;
+          centerx=centery=0;
+        }else if(xpick<ypick){
+          w2=384;
+          h2=height*384/width;
+          centerx=0;
+          centery=(216-h2)/2;
+        }else{
+          w2=width*216/height;
+          h2=216;
+          centerx=(384-w2)/2;
+          centery=0;
+        }
+        // EDIT: added +1 to account for an early rounding problem
+        unsigned x_ratio = ((width<<12)/w2)+1;
+        unsigned y_ratio = ((height<<12)/h2)+1;
+        unsigned char decodeBuf[width*3*2];//Enough memory to hold two rows of data
+        vram+=(centery*384)+centerx;
+        unsigned i,j,yo=0;
+        png_bytep row_pointers[2];
+        row_pointers[0]=decodeBuf;
+        row_pointers[1]=decodeBuf+(width*3);
+        png_read_rows(png_ptr, row_pointers, NULL,2);
+        unsigned left=height-2;
+        for (i=0;i<h2;i++){
+          //Deterimin how many lines to read
+          unsigned read=((y_ratio * i)>>12)-yo;
+          if(read){
+            while(read>=3){
+              png_read_row(png_ptr,decodeBuf,NULL);//Apperntly this is the right way to skip a row http://osdir.com/ml/graphics.png.devel/2008-05/msg00038.html
+              --read;
+              --left;
+            }
+            if(read==1){
+              memcpy(decodeBuf,decodeBuf+(width*3),width*3);
+              png_read_row(png_ptr,decodeBuf+(width*3),NULL);
+              --left;
+            }else{
+              png_read_rows(png_ptr, row_pointers, NULL,2);
+              left-=2;
+            }
+          }
+          for (j=0;j<w2;j++){
+            unsigned A[3],B[3],C[3],D[3];
+            unsigned x = x_ratio * j;
+            unsigned y = y_ratio * i;
+            unsigned x_diff = x&4095;
+            unsigned y_diff = y&4095;
+            unsigned ix_diff=4095-x_diff;
+            unsigned iy_diff=4095-y_diff;
+            x>>=12;
+            y>>=12;
+            yo=y;
+            unsigned rgb;
+            for(rgb=0;rgb<3;++rgb){
+              A[rgb] = (decodeBuf[x*3+rgb]*ix_diff*iy_diff)>>24;
+              B[rgb] = (decodeBuf[(x+1)*3+rgb]*(x_diff)*iy_diff)>>24;
+              C[rgb] = (decodeBuf[(x+width)*3+rgb]*(y_diff)*ix_diff)>>24;
+              D[rgb] = (decodeBuf[(x+width+1)*3+rgb]*(x_diff*y_diff))>>24;
+            }
+            // Y = A(1-w)(1-h) + B(w)(1-h) + C(h)(1-w) + Dwh
+          
+            *vram++=(((A[0]+B[0]+C[0]+D[0]) & 0xF8) << 8) | (((A[1]+B[1]+C[1]+D[1]) & 0xFC) << 3) | ((A[2]+B[2]+C[2]+D[2]) >> 3);
+            //*out++=A+B+C+D;
+          }
+          vram+=384-w2;
+        }
+        while(left--){
+          png_read_row(png_ptr,decodeBuf,NULL);//Avoid a too much data warning
+        }
+      }
+    } else {
+      unsigned char decodeBuf [width*3];
+      png_bytep row_pointers[1];
+      row_pointers[0]=decodeBuf;
+
+      if(startx>(int)width-LCD_WIDTH_PX) startx=width-LCD_WIDTH_PX;
+      if(starty>(int)height-LCD_HEIGHT_PX) starty=height-LCD_HEIGHT_PX;
+      if(startx<0) startx=0;
+      if(starty<0) starty=0;
+
+      for (int y = 0; y < starty; y++) {
+        png_read_row(png_ptr,decodeBuf,NULL); // skip a row
+      }
+      for (unsigned int y = 0; y < height-starty && y<LCD_HEIGHT_PX; y++) {
+        png_read_rows(png_ptr, &row_pointers[0], NULL, 1);
+        unsigned char* d=decodeBuf+3*startx;
+        for(unsigned int h=0;h<width-startx&&h<LCD_WIDTH_PX;++h){
+          *vram++=((d[0] & 0xF8) << 8) | ((d[1] & 0xFC) << 3) | (d[2] >> 3);
+          d+=3;
+        }
+        vram+=(width-startx>=LCD_WIDTH_PX?0:LCD_WIDTH_PX-(width-startx));
+      }
+    }
+
+    //cleanup
+    png_read_end(png_ptr,(png_infop)NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr,(png_infopp)NULL);
+    fclose(fp);
+    int inkeyloop = 1;
+    EnableStatusArea(3);
+    while(inkeyloop) {
+      int key;
+      GetKey(&key);
+      switch(key) {
+        case KEY_CTRL_EXIT:
+          EnableStatusArea(0);
+          return;
+        case KEY_CTRL_DOWN:
+          if(!mode) {
+            starty += 64;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CTRL_UP:
+          if(!mode) {
+            starty -= 64;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CTRL_RIGHT:
+          if(!mode) {
+            startx += 64;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CTRL_LEFT:
+          if(!mode) {
+            startx -= 64;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_2:
+          if(!mode) {
+            starty += LCD_HEIGHT_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_8:
+          if(!mode) {
+            starty -= LCD_HEIGHT_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_6:
+          if(!mode) {
+            startx += LCD_WIDTH_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_4:
+          if(!mode) {
+            startx -= LCD_WIDTH_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_7:
+          if(!mode) {
+            startx -= LCD_WIDTH_PX;
+            starty -= LCD_HEIGHT_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_9:
+          if(!mode) {
+            startx += LCD_WIDTH_PX;
+            starty -= LCD_HEIGHT_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_1:
+          if(!mode) {
+            startx -= LCD_WIDTH_PX;
+            starty += LCD_HEIGHT_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_3:
+          if(!mode) {
+            startx += LCD_WIDTH_PX;
+            starty += LCD_HEIGHT_PX;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_MINUS:
+          if(!mode) {
+            mode = 1;
+            inkeyloop = 0;
+          }
+          break;
+        case KEY_CHAR_PLUS:
+          if(mode) {
+            mode = 0;
+            inkeyloop = 0;
+          }
+          break;
+      }
+    }
   }
-  EnableStatusArea(0);
 }
