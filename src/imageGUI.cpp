@@ -284,12 +284,11 @@ void viewPNGimage(char* filename) {
   }
   unsigned char header[8];
   if(fread(header, 1, 8, fp)!=8){
-    errorMessage((char*)"An error occurred", (char*)"(failed to read", (char*)"file)");
     fclose(fp);
+    errorMessage((char*)"An error occurred", (char*)"(failed to read", (char*)"file)");
     return;
   }
-  int is_png = !png_sig_cmp(header, 0, 8);
-  if (!is_png){
+  if (png_sig_cmp(header, 0, 8)){
     fclose(fp);
     errorMessage((char*)"An error occurred", (char*)"(not a valid PNG", (char*)"file)");
     return;
@@ -301,8 +300,8 @@ void viewPNGimage(char* filename) {
   }
   png_infop info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr){
-    errorMessage((char*)"An error occurred", (char*)"(failed to create", (char*)"PNG info struct)");
     png_destroy_read_struct(&png_ptr,(png_infopp)NULL, (png_infopp)NULL);
+    errorMessage((char*)"An error occurred", (char*)"(failed to create", (char*)"PNG info struct)");
     return;
   }
   
