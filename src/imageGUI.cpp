@@ -240,7 +240,7 @@ UINT jpeg_in_func (JDEC* jd, BYTE* buff, UINT nbyte)
   else return nbyte;
   }
 }
-
+typedef display_graph TDispGraph;
 UINT jpeg_out_func (JDEC* jd, void* bitmap, JRECT* rect)
 {
   IODEV *dev = (IODEV*)jd->device;
