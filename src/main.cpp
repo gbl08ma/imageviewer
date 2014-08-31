@@ -75,7 +75,7 @@ int main()
     MCSGetDlen2(DIRNAME, STATEFILE, &MCSsize);
     char filename[MAX_FILENAME_SIZE+1] = "";
     if (MCSsize == 0) {
-      if(fileBrowser(filename, (unsigned char*)"*.jpg", (unsigned char*)"*.png", (char*)"Images")) {
+      if(fileBrowser(filename, (char*)"*.jpg", (char*)"*.png", (char*)"Images")) {
         if(MCS_CreateDirectory(DIRNAME) != 0) { // Create directory / check its existence
           // directory already exists, so delete the exiting file that may be there
           MCSDelVar2(DIRNAME, STATEFILE);

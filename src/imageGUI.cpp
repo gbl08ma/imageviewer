@@ -98,7 +98,7 @@ void viewJPEGimage(char* filename, void* ocram2backup) {
   devid.yoff = 0;
   int scale = 0;
   unsigned short filenameshort[0x10A];
-  Bfile_StrToName_ncpy(filenameshort, (unsigned char*)filename, 0x10A);
+  Bfile_StrToName_ncpy(filenameshort, filename, 0x10A);
   while(1) {
     restoreOCRAM2(ocram2backup); // see note on main.cpp
     int key;
@@ -275,17 +275,17 @@ UINT jpeg_out_func (JDEC* jd, void* bitmap, JRECT* rect)
 /**************************************************
  * PNG viewing code
 **************************************************/
-extern "C" {
+/*extern "C" {
 // this is needed for libpng:
 void abort(void) __attribute__ ((used));
 void abort(void) {
   int x=0,y=160;
-  PrintMini(&x,&y, (unsigned char*)"An error occurred, MENU to exit.",0,0xFFFFFFFF,0,0,0xFFFF,0,1,0);
+  PrintMini(&x,&y, (char*)"An error occurred, MENU to exit.",0,0xFFFFFFFF,0,0,0xFFFF,0,1,0);
   int key;
   while(1)
     GetKey(&key);
 }
-}
+}*/
 
 #define VRAM_ADDRESS 0xA8000000
 void viewPNGimage(char* filename) {

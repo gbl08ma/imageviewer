@@ -85,18 +85,18 @@ void insertSortFileMenuArray(File* data, MenuItem* mdata, int size) {
   for(i = 0; i < size; i++) mdata[i].text = data[i].visname;
 }
 
-int GetFiles(File* files, MenuItem* menuitems, char* basepath, int* count, unsigned char* filter, unsigned char* filter2) {
+int GetFiles(File* files, MenuItem* menuitems, char* basepath, int* count, char* filter, char* filter2) {
   // searches storage memory for folders and files, puts their count in int* count
   // if File* files is NULL, function will only count files. If it is not null, MenuItem* menuitems will also be updated
   // this function always returns status codes defined on fileProvider.hpp
   // basepath should start with \\fls0\ and should always have a slash (\) at the end
   // filter is the filter for the files to list
   unsigned short path[MAX_FILENAME_SIZE+1], found[MAX_FILENAME_SIZE+1];
-  unsigned char buffer[MAX_FILENAME_SIZE+1];
+  char buffer[MAX_FILENAME_SIZE+1];
 
   // make the buffer
-  strcpy((char*)buffer, basepath);
-  strcat((char*)buffer, "*");
+  strcpy(buffer, basepath);
+  strcat(buffer, "*");
   
   *count = 0;
   file_type_t fileinfo;
@@ -108,7 +108,7 @@ int GetFiles(File* files, MenuItem* menuitems, char* basepath, int* count, unsig
   Bfile_StrToName_ncpy(path2, filter2, MAX_FILENAME_SIZE+1);
   while(!ret) {
     Bfile_NameToStr_ncpy(buffer, found, MAX_FILENAME_SIZE+1);
-    if(!(strcmp((char*)buffer, "..") == 0 || strcmp((char*)buffer, ".") == 0 || strcmp((char*)buffer, "@MainMem") == 0)
+    if(!(strcmp(buffer, "..") == 0 || strcmp(buffer, ".") == 0 || strcmp(buffer, "@MainMem") == 0)
       && (fileinfo.fsize == 0 || Bfile_Name_MatchMask((const short int*)path, (const short int*)found) || Bfile_Name_MatchMask((const short int*)path2, (const short int*)found)))
     {
       if(files != NULL) {
