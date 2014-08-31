@@ -293,7 +293,6 @@ void viewPNGimage(char* filename) {
   int starty = 0;
   int mode = 0;
   while(1) {
-    //memset((unsigned short*)VRAM_ADDRESS,0,384*216*2);                    
     Bdisp_AllClr_VRAM();
     //load png file
     FILE *fp = fopen(filename, "rb");
@@ -350,15 +349,15 @@ void viewPNGimage(char* filename) {
 
     if(mode) {
       unsigned h;
-      if((width==384)&&(height<=216)){
-        png_bytep row_pointers[216];
+      if((width==LCD_WIDTH_PX)&&(height<=LCD_HEIGHT_PX)){
+        png_bytep row_pointers[LCD_HEIGHT_PX];
         //Simply center image and copy data
-        vram+=((216-height)/2)*384;
+        vram+=((LCD_HEIGHT_PX-height)/2)*LCD_WIDTH_PX;
         unsigned char imgTmp[width*height*3];
         unsigned char*d=imgTmp;
         for(h=0;h<height;++h){
           row_pointers[h]=d;
-          d+=384*3;
+          d+=LCD_WIDTH_PX*3;
         }
         png_read_image(png_ptr, row_pointers);
         d=imgTmp;
@@ -368,27 +367,27 @@ void viewPNGimage(char* filename) {
         }
       } else {
         unsigned int w2,h2,centerx,centery;
-        int xpick=(int)((384<<16)/width)+1,ypick=(int)((216<<16)/height)+1;
+        int xpick=(int)((LCD_WIDTH_PX<<16)/width)+1,ypick=(int)((LCD_HEIGHT_PX<<16)/height)+1;
         if(xpick==ypick){
-          w2=384;
-          h2=216;
+          w2=LCD_WIDTH_PX;
+          h2=LCD_HEIGHT_PX;
           centerx=centery=0;
         }else if(xpick<ypick){
-          w2=384;
-          h2=height*384/width;
+          w2=LCD_WIDTH_PX;
+          h2=height*LCD_WIDTH_PX/width;
           centerx=0;
-          centery=(216-h2)/2;
+          centery=(LCD_HEIGHT_PX-h2)/2;
         }else{
-          w2=width*216/height;
-          h2=216;
-          centerx=(384-w2)/2;
+          w2=width*LCD_HEIGHT_PX/height;
+          h2=LCD_HEIGHT_PX;
+          centerx=(LCD_WIDTH_PX-w2)/2;
           centery=0;
         }
         // EDIT: added +1 to account for an early rounding problem
         unsigned x_ratio = ((width<<12)/w2)+1;
         unsigned y_ratio = ((height<<12)/h2)+1;
         unsigned char decodeBuf[width*3*2];//Enough memory to hold two rows of data
-        vram+=(centery*384)+centerx;
+        vram+=(centery*LCD_WIDTH_PX)+centerx;
         unsigned i,j,yo=0;
         png_bytep row_pointers[2];
         row_pointers[0]=decodeBuf;
@@ -436,7 +435,7 @@ void viewPNGimage(char* filename) {
             *vram++=(((A[0]+B[0]+C[0]+D[0]) & 0xF8) << 8) | (((A[1]+B[1]+C[1]+D[1]) & 0xFC) << 3) | ((A[2]+B[2]+C[2]+D[2]) >> 3);
             //*out++=A+B+C+D;
           }
-          vram+=384-w2;
+          vram+=LCD_WIDTH_PX-w2;
         }
         while(left--){
           png_read_row(png_ptr,decodeBuf,NULL);//Avoid a too much data warning
