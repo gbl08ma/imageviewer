@@ -287,7 +287,6 @@ void abort(void) {
 }
 }*/
 
-#define VRAM_ADDRESS 0xA8000000
 void viewPNGimage(char* filename) {
   int startx = 0;
   int starty = 0;
@@ -345,7 +344,7 @@ void viewPNGimage(char* filename) {
     png_set_background_fixed(png_ptr,&background_color,PNG_BACKGROUND_GAMMA_SCREEN, 0, PNG_FP_1);
     png_read_update_info(png_ptr, info_ptr);
     
-    unsigned short * vram=(unsigned short*)VRAM_ADDRESS;
+    unsigned short * vram=(unsigned short*)GetVRAMAddress();
 
     if(mode) {
       unsigned h;
