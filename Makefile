@@ -43,9 +43,9 @@ CXXFLAGS	=	 -std=c++11 -Os -fno-exceptions -Wall -Winline -flto $(MACHDEP) $(INC
 LDFLAGS	= $(MACHDEP) -T$(FXCGSDK)/common/prizm.ld -Ofast -flto -Wl,-static -Wl,-gc-sections -Wl,-Map,foo.map
 
 #---------------------------------------------------------------------------------
-# any extra libraries we wish to link with the project   -lz -lpng
+# any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	 -lpng16 -lz -lfxcg -lm -lc -lgcc -lminiz
+LIBS	:=	 -lpng16 -lz -lfxcg -lc -lgcc
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
