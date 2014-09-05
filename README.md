@@ -66,7 +66,7 @@ Note that the image is not inserted inside the eActivity, the strip merely acts 
 
 Assuming you are using a setup similar to PrizmSDK, cloning this repository is enough to put you on the right track. You may need to edit the makefile to point it the correct locations for includes and linker scripts.
 
-This add-in needs to link against libfxcg, libc, libgcc, and also zlib and libpng. You'll need to cross-compile them for the Prizm, and then make sure that the Makefile points to their correct locations for static linking.
+This add-in needs to link against libfxcg, libc, libgcc, and also zlib and libpng. You'll need to cross-compile the latter two for the Prizm, and then make sure that the Makefile points to their correct locations for static linking.
 
 The Makefile assumes you have a special build of mkg3a with support for eActivity strip creation. If this isn't the case, remove the `-s` and `-i mon:../monoicon.bin` flags from `MKG3AFLAGS` (of course, the resulting g3a will not support running as an eActivity strip).
 
