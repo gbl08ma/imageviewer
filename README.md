@@ -28,7 +28,7 @@ This is a software add-in for the Casio Prizm series of calculators, that allows
   
   - 160 KiB of storage memory available (for the add-in g3a);
   
-  - 48 bytes of main memory available, for storing the filename of the picture that was being viewed, if any.
+  - Up to 300 bytes of main memory available, for storing the filename of the picture that was being viewed, if any.
   
 ## Installation instructions
 
