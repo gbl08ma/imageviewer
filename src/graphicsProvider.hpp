@@ -59,7 +59,7 @@ void drawFkeyPopup(int Fkey, char* title);
 //void CopySprite(const void* datar, int x, int y, int width, int height);
 void CopySpriteMasked(unsigned short* data, int x, int y, int width, int height, unsigned short maskcolor);
 void CopySpriteNbit(const unsigned char* data, int x, int y, int width, int height, const color_t* palette, unsigned int bitwidth);
-void drawtnyimLogo( int x, int y);
+void drawSegvaultLogo( int x, int y);
 int textColorToFullColor(int textcolor);
 void progressMessage(char* message, int cur, int total);
 void closeProgressMessage();
