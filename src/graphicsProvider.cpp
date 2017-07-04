@@ -45,16 +45,18 @@
 
 #include "graphicsProvider.hpp"
 
+color_t* VRAM_base;
+
 //draws a point of color color at (x0, y0) 
 void plot(int x0, int y0, unsigned short color) {
-  unsigned short* VRAM = (unsigned short*)0xA8000000; 
+  unsigned short* VRAM = (unsigned short*)VRAM_base; 
   VRAM += (y0*LCD_WIDTH_PX + x0); 
   *VRAM = color;
   return; 
 }
 
 void drawRectangle(int x, int y, int width, int height, unsigned short color) {
-  unsigned short*VRAM = (unsigned short*)0xA8000000;
+  unsigned short*VRAM = (unsigned short*)VRAM_base;
   for(int j = y; j < y+height; j++) {
     for(int i = x; i < x+width; i++) {
       *(j*LCD_WIDTH_PX+i+VRAM) = color;      
@@ -134,8 +136,7 @@ void drawFilledCircle(int centerx, int centery, int radius, color_t color) {
 
 //ReplaceColor By Kerm:
 void VRAMReplaceColorInRect(int x, int y, int width, int height, color_t color_old, color_t color_new) { 
-   //color_t* VRAM = GetVRAMAddress();
-   color_t* VRAM = (color_t*)0xA8000000; 
+   color_t* VRAM = (color_t*)VRAM_base; 
    VRAM += (y*LCD_WIDTH_PX)+x; 
    for(int j=0; j<height; VRAM += (LCD_WIDTH_PX-width), j++) { 
       for(int i=0; i<width; VRAM++, i++) { 
@@ -145,7 +146,7 @@ void VRAMReplaceColorInRect(int x, int y, int width, int height, color_t color_o
 }
 
 void VRAMInvertArea(short x, short y, short width, short height) {
-   color_t* VRAM = (color_t*)0xA8000000; 
+   color_t* VRAM = (color_t*)VRAM_base; 
    VRAM += (y*LCD_WIDTH_PX)+x; 
    for(int j=0; j<height; VRAM += (LCD_WIDTH_PX-width), j++) { 
       for(int i=0; i<width; VRAM++, i++) { 
@@ -155,7 +156,7 @@ void VRAMInvertArea(short x, short y, short width, short height) {
 }
 
 void CopySpriteMasked(unsigned short* data, int x, int y, int width, int height, unsigned short maskcolor) {
-  unsigned short* VRAM = (unsigned short*)0xA8000000; 
+  unsigned short* VRAM = (unsigned short*)VRAM_base; 
   VRAM += (LCD_WIDTH_PX*y + x); 
   while(height--) {
     int i=width;
@@ -171,7 +172,7 @@ void CopySpriteMasked(unsigned short* data, int x, int y, int width, int height,
   }
 }
 void CopySpriteNbit(const unsigned char* data, int x, int y, int width, int height, const color_t* palette, unsigned int bitwidth) {
-   color_t* VRAM = (color_t*)0xA8000000;
+   color_t* VRAM = (color_t*)VRAM_base;
    VRAM += (LCD_WIDTH_PX*y + x);
    int offset = 0;
    unsigned char buf = 0;

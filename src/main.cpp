@@ -51,6 +51,8 @@
 #define DIRNAME (unsigned char*)"@IMAGES"
 #define STATEFILE (unsigned char*)"LastImg"
 
+extern color_t* VRAM_base;
+
 int main()
 {
   // Add-in entry point
@@ -69,6 +71,8 @@ int main()
   Bdisp_EnableColor(1);
   EnableStatusArea(0);
   DefineStatusAreaFlags(3, SAF_BATTERY | SAF_TEXT | SAF_GLYPH | SAF_ALPHA_SHIFT, 0, 0);
+
+  VRAM_base = (color_t*)GetVRAMAddress();
   
   while(1) {
     int MCSsize;
