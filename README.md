@@ -1,4 +1,4 @@
-# Image viewer for the Casio Prizm (fx-CG 10 and 20)
+# Image viewer for the Casio Prizm (fx-CG 10, 20 and 50; Graph 90+E)
 
 This is a software add-in for the Casio Prizm series of calculators, that allows for viewing pictures in JPEG and PNG format.
 
@@ -24,7 +24,7 @@ This is a software add-in for the Casio Prizm series of calculators, that allows
   
 ## System requirements
 
-  - Casio fx-CG 10 or fx-CG 20, running any OS version (01.03 and up is recommended);
+  - Casio fx-CG 10, fx-CG 20, fx-CG 50 or Graph 90+E, running any OS version (for fx-CG 10 and 20, 01.03 and up is recommended);
   
   - 160 KiB of storage memory available (for the add-in g3a);
   
@@ -99,7 +99,7 @@ This Image Viewer is the result of over one year of research, work and extensive
 We hope you enjoy using this Image Viewer as much as we did developing it. And if this add-in ever becomes useful, you just found a secret feature ;)
 
 ---
-Copyright (C) 2013-2014 Gabriel Maia (gbl08ma) and the tny. internet media group
+Copyright (C) 2013-2017 Gabriel Maia (gbl08ma) and Segvault
 
 All rights reserved.
 
