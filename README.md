@@ -75,7 +75,7 @@ This Image Viewer, like most software, receives updates from time to time. You s
 
 [http://gbl08ma.com/casio-prizm-software/](http://gbl08ma.com/casio-prizm-software/)
 
-If the above page isn't available, you can try checking for news at the tny. internet media website:
+If the above page isn't available, you can try checking for news at the TNY network website:
 
 [http://i.tny.im/](http://i.tny.im/)
 
@@ -91,7 +91,7 @@ See the disclaimer at the end of this file or the messages on the about screen o
 
 Distributing this Read-Me along with the g3a binary is not mandatory.
 
-Any derivative work based on this software should clearly state it is not the Image Viewer for the Prizm by gbl08ma at tny. internet media.
+Any derivative work based on this software should clearly state it is not the Image Viewer for the Prizm by gbl08ma at Segvault.
 
 ## Last words
 This Image Viewer is the result of over one year of research, work and extensive testing. The libraries it uses for image viewing (zlib, libpng and TJpgDec) have been around for even longer. That said, we or the authors of those libraries can't guarantee you will have no problems using the add-in or that everything will work as described. You are welcome to report problems to the contacts above, as well as modify the source code to your needs as long as you respect the license.
