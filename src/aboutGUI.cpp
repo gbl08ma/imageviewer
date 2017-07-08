@@ -106,7 +106,7 @@ void showAbout() {
   
   elem[5].newLine = 1;
   elem[5].lineSpacing = 8;
-  elem[5].text = (char*)"Copyright (C) 2014, Gabriel Maia and the tny. internet media group";
+  elem[5].text = (char*)"Copyright (C) 2014-2017, Gabriel Maia and Segvault";
   
   elem[6].newLine = 1;
   elem[6].text = (char*)"All rights reserved.";
